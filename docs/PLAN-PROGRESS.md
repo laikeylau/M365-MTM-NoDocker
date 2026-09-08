@@ -9,7 +9,7 @@
 |---|---|---|
 | Phase 1 减重 (轨道 A) | A1 SQLite 存储层 | ✅ 完成(含 bug 修复与回归测试) |
 | | A2 API 守护 + systemd + Caddy | ✅ 完成(本机冒烟验证通过) |
-| | A3 前端预构建 + 死代码清理 | ⚠️ 部分完成(见下) |
+| | A3 前端预构建 + 死代码清理 | ✅ 完成(2026-09-08: 93+ 死文件删除、ToastContext 迁移、10 依赖裁剪、next build 全量通过 302 页导出) |
 | | A4 安装与残留清理 | ✅ 完成 |
 | | A5 后台任务自持 | ✅ 完成(端到端验证通过) |
 | Phase 2 报告中心 (轨道 B) | B1–B3 | ❌ 未开始 |
@@ -52,12 +52,14 @@
 
 ## 剩余工作
 
-### A3. 前端死代码清理(未完成部分)
-- [ ] 删除 `frontend/src/sections/dashboard/` 93 个未引用 Devias 演示文件(需 import 图分析 + 构建验证)
-- [ ] 11 个占位页、重复版本(dashboardv1、旧 onboarding.js 等)、`ReportDashboard.jsx`
-- [ ] 移除未用依赖: react-grid-layout、@nivo/*、Formik、react-quill、react-beautiful-dnd、Recharts(保留 react-window + ApexCharts)、Redux(toast slice 迁 context)
-- [ ] `npm install && npm run build` 全量验证后提交 frontend-dist/ 产物
-- 注意: 本机有 Node v24,但 node_modules 未安装;构建约需数分钟
+### A3. 前端死代码清理 ✅ (2026-09-08 完成)
+- [x] 删除 `frontend/src/sections/dashboard/` 93 个未引用 Devias 演示文件(import 图分析 0 引用)
+- [x] 删除 dashboardv1.js、onboarding.js、onboardingv2.js、ReportDashboard.jsx、quill-editor.js、CippDropzone.jsx、AuthMethodSankey/CaDeviceSankey(全部 0 引用)
+- [x] Redux(toasts) → `src/contexts/toast-context.js`(10 个消费方迁移,store 删除)
+- [x] 依赖裁剪: react-grid-layout、formik、react-quill、react-beautiful-dnd、react-redux、redux、@reduxjs/toolkit、redux-persist、redux-thunk、redux-devtools-extension
+- **计划修正**: recharts/@nivo/material-react-table 保留 —— 它们被在用的首页 dashboardv2(SecureScoreCard/AuthMethodCard→CippSankey)和 CippDataTable(Phase 2 B2 需要)引用
+- [x] `npm install --legacy-peer-deps && NODE_OPTIONS=--max-old-space-size=6144 npm run build` 全量通过(302 页静态导出,51MB)
+- **踩坑**: Next 16 静态导出 worker(isolatedMemory)强制删除 --max-old-space-size 用默认 ~2GB 堆 → 8GB 物理内存机器 OOM;next.config 加 `experimental.workerThreads: true` 让线程共享父进程堆解决。本机安装需 `--legacy-peer-deps`(react-html-parser vs React 19 既有冲突)
 
 ### Phase 2. AdminDroid 式报告中心(B1–B3,未开始)
 - B1 `frontend/src/data/report-registry.js`(服务→分类→报告树,nameEn/nameZh)
