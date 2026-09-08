@@ -1,0 +1,20 @@
+[Unit]
+Description=CIPP Background Worker (cron timers + SQLite queue)
+After=network-online.target cipp-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/M365-MTM
+ExecStart=/usr/bin/pwsh -NoProfile -File /opt/M365-MTM/cipp-server.ps1 -WorkerOnly
+Restart=always
+RestartSec=5
+Environment=CIPP_SQLITE_DB=/opt/M365-MTM/backend/data/cipp.db
+EnvironmentFile=-/opt/M365-MTM/deploy/cipp.env
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cipp-worker
+
+[Install]
+WantedBy=multi-user.target

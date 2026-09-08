@@ -1,0 +1,107 @@
+# Caddy reverse proxy for CIPP direct-run deployment
+# - Serves the pre-built frontend from ./frontend-dist
+# - Proxies /api/* to the PowerShell API host on 127.0.0.1:7071
+# - Mocks Azure Static Web Apps /.auth/* endpoints (local auth mode)
+# - Basic rate limiting for auth endpoints
+#
+# First run will attempt an automatic Let's Encrypt certificate for $DOMAIN.
+# For testing without a domain, uncomment the :80 block instead.
+
+{
+	email {$CADDY_EMAIL}
+}
+
+# NOTE: the rate_limit blocks below require the caddy-ratelimit plugin
+# (xcaddy build --with github.com/mholt/caddy-ratelimit). If you use stock Caddy,
+# delete those two rate_limit blocks - the rest works with standard Caddy.
+
+{$DOMAIN} {
+	# ───────────────────────────────────────────────
+	# Static frontend (Next.js static export)
+	# ───────────────────────────────────────────────
+	root * /opt/M365-MTM/frontend-dist
+	encode gzip zstd
+
+	# Immutable build assets
+	@static path /_next/static/*
+	header @static Cache-Control "public, immutable, max-age=31536000"
+
+	@assets path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot *.webp *.avif
+	header @assets Cache-Control "public, immutable, max-age=31536000"
+
+	# HTML: never cache
+	header / Cache-Control "no-store, no-cache, must-revalidate"
+
+	# ───────────────────────────────────────────────
+	# Azure SWA auth mock (CIPP local auth mode)
+	# ───────────────────────────────────────────────
+	handle /.auth/me {
+		header Content-Type application/json
+		respond '{"clientPrincipal":{"userId":"local-admin","userDetails":"Local Admin","identityProvider":"localauth","userRoles":["anonymous","authenticated","superadmin"]}}' 200
+	}
+	handle /.auth/login/aad {
+		redir /login 302
+	}
+	handle /.auth/logout {
+		redir /login 302
+	}
+	handle /.auth/* {
+		header Content-Type application/json
+		respond '{}' 200
+	}
+
+	# ───────────────────────────────────────────────
+	# API proxy (rate limit login/register)
+	# ───────────────────────────────────────────────
+	handle /api/Invoke-AuthLogin {
+		rate_limit {
+			zone login {
+				match {
+					method POST
+				}
+				key {remote_host}
+				events 5
+				window 1m
+			}
+		}
+		reverse_proxy 127.0.0.1:7071
+	}
+	handle /api/Invoke-AuthRegister {
+		rate_limit {
+			zone register {
+				match {
+					method POST
+				}
+				key {remote_host}
+				events 2
+				window 1m
+			}
+		}
+		reverse_proxy 127.0.0.1:7071
+	}
+	handle /api/* {
+		reverse_proxy 127.0.0.1:7071 {
+			transport http {
+				keepalive 30s
+			}
+		}
+	}
+
+	# Health check
+	handle /health {
+		respond "ok
+" 200 {
+			close
+		}
+	}
+
+	# SPA fallback: try file, then index.html (Next.js static export uses .html files)
+	try_files {path} {path}.html {path}/index.html /index.html
+	file_server
+
+	# Block common attack paths
+	@blocked path /wp-admin* /wp-login* /xmlrpc* /.git* /.env*
+	respond @blocked 403 {
+		close
+	}
+}

@@ -1,0 +1,24 @@
+[Unit]
+Description=CIPP API Server (direct-run PowerShell host)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust the user/path if you installed elsewhere
+User=root
+WorkingDirectory=/opt/M365-MTM
+ExecStart=/usr/bin/pwsh -NoProfile -File /opt/M365-MTM/cipp-server.ps1
+Restart=always
+RestartSec=5
+# SQLite storage lives under backend/data
+Environment=CIPP_SQLITE_DB=/opt/M365-MTM/backend/data/cipp.db
+Environment=CIPP_API_PORT=7071
+# Secrets file (optional): CIPP_SQLITE_DB etc. can be overridden here
+EnvironmentFile=-/opt/M365-MTM/deploy/cipp.env
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cipp-api
+
+[Install]
+WantedBy=multi-user.target

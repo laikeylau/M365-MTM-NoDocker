@@ -1,0 +1,26 @@
+.github/workflows/
+.github/pull.yml
+local.settings.json
+tenants.cache.json
+chocoapps.cache
+*.log
+.vscode/
+Cache_*
+Logs
+ExcludedTenants
+SendNotifications/config.json
+.env
+Output/
+node_modules/.yarn-integrity
+yarn.lock
+Shared/CIPPSharp/obj/
+
+# Cursor IDE
+.cursor/rules
+.claude
+
+# Ignore all root PowerShell files except profile.ps1
+/*.ps1
+!/profile.ps1
+.DS_Store
+proxyman.pem

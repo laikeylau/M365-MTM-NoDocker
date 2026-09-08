@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.next/
+out/
+*.tgz
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+frontend-dist/
+frontend-dist.bak/
+frontend-dist.turbopack.bak/
+
+# Backup files
+*.bak
+*.bak.*
+
+# Azure Functions
+bin/
+obj/
+
+# PowerShell
+*.pssc
+*.psrc
+
+# Temporary
+tmp/
+temp/
+
+# Tenant config (contains sensitive data)
+scripts/tenants.json
