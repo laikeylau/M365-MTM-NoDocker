@@ -1,14 +1,13 @@
 import Head from 'next/head'
 import { LocalAuthProvider } from '../contexts/local-auth-context'
 import { Toaster } from 'react-hot-toast'
-import { Provider as ReduxProvider } from 'react-redux'
 import { CacheProvider } from '@emotion/react'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ReleaseNotesProvider } from '../contexts/release-notes-context'
+import { ToastProvider } from '../contexts/toast-context'
 import { SettingsConsumer, SettingsProvider } from '../contexts/settings-context'
 import { RTL } from '../components/rtl'
-import { store } from '../store'
 import { createTheme } from '../theme'
 import { createEmotionCache } from '../utils/create-emotion-cache'
 import '../libs/nprogress'
@@ -248,7 +247,7 @@ const App = (props) => {
         <title>M365 MTM</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ReduxProvider store={store}>
+      <ToastProvider>
         <QueryClientProvider client={queryClient}>
           <SettingsProvider>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={dateLocale}>
@@ -301,7 +300,7 @@ const App = (props) => {
             </LocalizationProvider>
           </SettingsProvider>
         </QueryClientProvider>
-      </ReduxProvider>
+      </ToastProvider>
     </CacheProvider>
     </LocalAuthProvider>
   )

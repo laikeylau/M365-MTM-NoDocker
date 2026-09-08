@@ -13,8 +13,7 @@ import {
 } from "@mui/material";
 import { usePopover } from "../hooks/use-popover";
 import { Error, Update, Close as CloseIcon } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { closeToast, resetToast } from "../store/toasts";
+import { useToast } from "../contexts/toast-context";
 import { useEffect, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 
@@ -52,8 +51,7 @@ const getContent = (notification) => {
 };
 
 export const NotificationsPopover = () => {
-  const dispatch = useDispatch();
-  const toasts = useSelector((state) => state.toasts.toasts);
+  const { toasts, closeToast, resetToast } = useToast();
   const [page, setPage] = useState(0);
 
   // Map toasts to notifications
@@ -150,7 +148,7 @@ export const NotificationsPopover = () => {
                   </Box>
                   <IconButton
                     size="small"
-                    onClick={() => dispatch(closeToast({ index: notification.id }))}
+                    onClick={() => closeToast({ index: notification.id })}
                   >
                     <CloseIcon fontSize="small" />
                   </IconButton>
@@ -169,7 +167,7 @@ export const NotificationsPopover = () => {
             variant="outlined"
             size="small"
             onClick={() => {
-              dispatch(resetToast());
+              resetToast();
               popover.handleClose();
             }}
             startIcon={

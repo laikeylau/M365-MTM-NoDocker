@@ -20,8 +20,7 @@ import { MobileNav } from './mobile-nav'
 import { SideNav } from './side-nav'
 import { TopNav } from './top-nav'
 import { ApiGetCall } from '../api/ApiCall'
-import { useDispatch } from 'react-redux'
-import { showToast } from '../store/toasts'
+import { useToast } from '../contexts/toast-context'
 import Grid from '@mui/system/Grid'
 import { CippImageCard } from '../components/CippCards/CippImageCard'
 import { useDialog } from '../hooks/use-dialog'
@@ -281,18 +280,16 @@ export const Layout = (props) => {
   }, [alertsAPI.isSuccess, alertsAPI.data, alertsAPI.isFetching])
   const [setupCompleted, setSetupCompleted] = useState(true)
   const createDialog = useDialog()
-  const dispatch = useDispatch()
+  const { showToast } = useToast()
   useEffect(() => {
     if (alertsAPI.isSuccess && !alertsAPI.isFetching) {
       if (alertsAPI.data.length > 0) {
         alertsAPI.data.forEach((alert) => {
-          dispatch(
-            showToast({
-              message: alert.Alert,
-              title: alert.title,
-              toastError: alert,
-            })
-          )
+          showToast({
+            message: alert.Alert,
+            title: alert.title,
+            toastError: alert,
+          })
         })
       }
     }

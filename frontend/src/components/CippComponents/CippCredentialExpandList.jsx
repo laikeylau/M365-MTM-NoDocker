@@ -11,11 +11,10 @@ import {
   Typography,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useDispatch } from "react-redux";
 import axios from "axios";
 import { buildVersionedHeaders } from "../../utils/cippVersion";
-import { showToast } from "../../store/toasts";
 import { getCippError } from "../../utils/get-cipp-error";
+import { useToast } from "../../contexts/toast-context";
 import { ConfirmationDialog } from "../confirmation-dialog";
 
 const credentialPrimaryLabel = (cred, credentialType) => {
@@ -41,7 +40,7 @@ export const CippCredentialExpandList = ({
   canRemove,
   onRemoved,
 }) => {
-  const dispatch = useDispatch();
+  const { showToast } = useToast();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [menuCred, setMenuCred] = useState(null);
   const [pendingKeyId, setPendingKeyId] = useState(null);
@@ -82,29 +81,25 @@ export const CippCredentialExpandList = ({
         const result = response.data?.Results;
         const msg = result?.resultText || "Credential removed.";
         const isError = result?.state === "error";
-        dispatch(
-          showToast({
-            title: isError ? "Error" : "Success",
-            message: msg,
-            toastError: isError ? new Error(msg) : undefined,
-          }),
-        );
+        showToast({
+          title: isError ? "Error" : "Success",
+          message: msg,
+          toastError: isError ? new Error(msg) : undefined,
+        });
         if (!isError && typeof onRemoved === "function") {
           onRemoved();
         }
       } catch (e) {
-        dispatch(
-          showToast({
-            title: "Error",
-            message: getCippError(e),
-            toastError: e,
-          }),
-        );
+        showToast({
+          title: "Error",
+          message: getCippError(e),
+          toastError: e,
+        });
       } finally {
         setPendingKeyId(null);
       }
     },
-    [graphObjectId, tenantFilter, credentialType, appType, dispatch, onRemoved],
+    [graphObjectId, tenantFilter, credentialType, appType, showToast, onRemoved],
   );
 
   const openRemovalConfirm = useCallback(() => {

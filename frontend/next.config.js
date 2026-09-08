@@ -21,6 +21,7 @@ const config = {
     preloadEntriesOnStart: false,
     turbopackFileSystemCacheForDev: false,
     turbopackMemoryLimit: 4096,
+    workerThreads: true,
   },
   images: {
     unoptimized: true,

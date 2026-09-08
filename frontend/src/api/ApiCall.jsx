@@ -1,7 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
-import { useDispatch } from "react-redux";
-import { showToast } from "../store/toasts";
+import { useToast } from "../contexts/toast-context";
 import { getCippError } from "../utils/get-cipp-error";
 import { buildVersionedHeaders } from "../utils/cippVersion";
 
@@ -31,7 +30,7 @@ export function ApiGetCall(props) {
     convertToDataUrl = false,
   } = props;
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
+  const { showToast } = useToast();
   const MAX_RETRIES = retry;
   const HTTP_STATUS_TO_NOT_RETRY = [302, 401, 403, 404, 500];
   const retryFn = (failureCount, error) => {
@@ -49,14 +48,12 @@ export function ApiGetCall(props) {
       returnRetry = false;
     }
     if (returnRetry === false && toast) {
-      dispatch(
-        showToast({
-          message: `${getCippError(error)}`,
-          title: `${
-            error.config?.params?.tenantFilter ? error.config?.params?.tenantFilter : ""
-          } Error`,
-        }),
-      );
+      showToast({
+        message: `${getCippError(error)}`,
+        title: `${
+          error.config?.params?.tenantFilter ? error.config?.params?.tenantFilter : ""
+        } Error`,
+      });
     }
     return returnRetry;
   };
@@ -254,7 +251,7 @@ export function ApiGetCallWithPagination({
   toast = false,
   waiting = true,
 }) {
-  const dispatch = useDispatch();
+  const { showToast } = useToast();
   const queryClient = useQueryClient();
   const MAX_RETRIES = retry;
   const HTTP_STATUS_TO_NOT_RETRY = [302, 401, 403, 404, 500];
@@ -275,13 +272,11 @@ export function ApiGetCallWithPagination({
     }
 
     if (returnRetry === false && toast) {
-      dispatch(
-        showToast({
-          message: getCippError(error),
-          title: "Error",
-          toastError: error,
-        }),
-      );
+      showToast({
+        message: getCippError(error),
+        title: "Error",
+        toastError: error,
+      });
     }
     return returnRetry;
   };

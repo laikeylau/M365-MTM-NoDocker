@@ -1,12 +1,9 @@
 import { CloseSharp } from "@mui/icons-material";
 import { Alert, IconButton, Snackbar } from "@mui/material";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { closeToast } from "../store/toasts";
+import { useToast } from "../contexts/toast-context";
 
 const Toasts = () => {
-  const dispatch = useDispatch();
-  const toasts = useSelector((state) => state.toasts.toasts);
+  const { toasts, closeToast } = useToast();
 
   return (
     <>
@@ -18,14 +15,14 @@ const Toasts = () => {
             key={toast.index}
             open={true}
             autoHideDuration={6000}
-            onClose={() => dispatch(closeToast({ index: toast.index }))}
+            onClose={() => closeToast({ index: toast.index })}
             action={
               <>
                 <IconButton
                   size="small"
                   aria-label="close"
                   color="inherit"
-                  onClick={() => dispatch(closeToast({ index: toast.index }))}
+                  onClick={() => closeToast({ index: toast.index })}
                 >
                   <CloseSharp fontSize="small" />
                 </IconButton>
@@ -33,7 +30,7 @@ const Toasts = () => {
             }
           >
             <Alert
-              onClose={() => dispatch(closeToast({ index: toast.index }))}
+              onClose={() => closeToast({ index: toast.index })}
               severity="error"
               variant="filled"
               sx={{ width: "100%" }}

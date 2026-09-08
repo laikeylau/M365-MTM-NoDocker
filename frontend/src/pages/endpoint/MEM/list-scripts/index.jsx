@@ -7,7 +7,7 @@ import {
   UserGroupIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
-import { showToast } from "../../../../store/toasts";
+import { useToast } from "../../../../contexts/toast-context";
 import {
   Button,
   Dialog,
@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 import { CippCodeBlock } from "../../../../components/CippComponents/CippCodeBlock";
 import { useState, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { Close, Save, LaptopChromebook } from "@mui/icons-material";
 import { useSettings } from "../../../../hooks/use-settings";
 import { Stack } from "@mui/system";
@@ -40,7 +39,7 @@ const Page = () => {
   const [warnOpen, setWarnOpen] = useState(false);
   const [currentScript, setCurrentScript] = useState(null);
 
-  const dispatch = useDispatch();
+  const { showToast } = useToast();
 
   const language = useMemo(() => {
     return currentScript?.scriptType?.toLowerCase() === ("macos" || "linux")
@@ -136,13 +135,11 @@ const Page = () => {
       });
 
       if (!response.ok) {
-        dispatch(
-          showToast({
-            title: "Script Save Error",
-            message: "Your Intune script could not be saved.",
-            type: "error",
-          })
-        );
+        showToast({
+          title: "Script Save Error",
+          message: "Your Intune script could not be saved.",
+          type: "error",
+        });
       }
 
       return response.json();
@@ -157,13 +154,11 @@ const Page = () => {
     const { data } = await saveScriptRefetch();
     setCodeContentChanged(false);
     setCodeOpen(!codeOpen);
-    dispatch(
-      showToast({
-        title: "Script Saved",
-        message: "Your Intune script has been saved successfully.",
-        type: "update",
-      })
-    );
+    showToast({
+      title: "Script Saved",
+      message: "Your Intune script has been saved successfully.",
+      type: "update",
+    });
   };
 
   // Map script type to Graph API endpoint
