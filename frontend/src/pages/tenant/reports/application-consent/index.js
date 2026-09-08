@@ -1,43 +1,18 @@
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
-import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
-import { useCippReportDB } from "../../../../components/CippComponents/CippReportDBControls";
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
 
-const pageTitle = "Consented Applications";
-
+/**
+ * B2 旧路由重定向 — 本页已迁移至统一报告中心 (security/app-consent)。
+ */
 const Page = () => {
-  const reportDB = useCippReportDB({
-    apiUrl: "/api/ListOAuthApps",
-    queryKey: "ListOAuthApps",
-    cacheName: "OAuth2PermissionGrants",
-    syncTitle: "Sync Consented Applications",
-    allowToggle: true,
-    defaultCached: true,
-  });
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/reports/security/app-consent')
+  }, [router])
+  return null
+}
 
-  const simpleColumns = [
-    ...reportDB.cacheColumns.filter((c) => c === "Tenant"),
-    "Name",
-    "ApplicationID",
-    "ObjectID",
-    "Scope",
-    "StartTime",
-    ...reportDB.cacheColumns.filter((c) => c !== "Tenant"),
-  ];
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
-  return (
-    <>
-      <CippTablePage
-        title={pageTitle}
-        apiUrl={reportDB.resolvedApiUrl}
-        queryKey={reportDB.resolvedQueryKey}
-        simpleColumns={simpleColumns}
-        cardButton={reportDB.controls}
-      />
-      {reportDB.syncDialog}
-    </>
-  );
-};
-
-Page.getLayout = (page) => <DashboardLayout allTenantsSupport={true}>{page}</DashboardLayout>;
-
-export default Page;
+export default Page

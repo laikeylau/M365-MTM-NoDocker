@@ -41,6 +41,9 @@ import { CippTenantSelector } from '../components/CippComponents/CippTenantSelec
 import { NotificationsPopover } from './notifications-popover'
 import { useDialog } from '../hooks/use-dialog'
 import { CippUniversalSearchV2 } from '../components/CippCards/CippUniversalSearchV2'
+import { useTranslation } from 'react-i18next'
+import LanguageIcon from '@mui/icons-material/Language'
+import { SUPPORTED_LANGUAGES } from '../i18n'
 
 const TOP_NAV_HEIGHT = 64
 
@@ -53,6 +56,15 @@ export const TopNav = (props) => {
   const showPopoverBookmarks = settings.bookmarkPopover === true
   const reorderMode = settings.bookmarkReorderMode || 'arrows'
   const locked = settings.bookmarkLocked ?? false
+  const { i18n } = useTranslation()
+  const activeCode = i18n.language?.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en'
+  const currentLanguage = SUPPORTED_LANGUAGES.find((language) => language.code === activeCode) ?? SUPPORTED_LANGUAGES[0]
+  const nextLanguage = SUPPORTED_LANGUAGES.find(
+    (language) => language.code !== currentLanguage.code
+  ) ?? SUPPORTED_LANGUAGES[0]
+  const handleLanguageSwitch = useCallback(() => {
+    i18n.changeLanguage(nextLanguage.code)
+  }, [i18n, nextLanguage.code])
   const handleThemeSwitch = useCallback(() => {
     const themeName = settings.currentTheme?.value === 'light' ? 'dark' : 'light'
     settings.handleUpdate({
@@ -296,6 +308,17 @@ export const TopNav = (props) => {
               title="Open Universal Search (Ctrl/Cmd+Shift+F)"
             >
               <TravelExploreIcon color="action" fontSize="small" />
+            </IconButton>
+          )}
+          {!mdDown && (
+            <IconButton
+              color="inherit"
+              onClick={handleLanguageSwitch}
+              title={`Language: ${currentLanguage.label} → ${nextLanguage.label}`}
+            >
+              <SvgIcon color="action" fontSize="small">
+                <LanguageIcon />
+              </SvgIcon>
             </IconButton>
           )}
           {!mdDown && (

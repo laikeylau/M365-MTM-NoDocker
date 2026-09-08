@@ -27,6 +27,9 @@ import { ApiGetCall } from "../api/ApiCall";
 import { CogIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useReleaseNotes } from "../contexts/release-notes-context";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import LanguageIcon from "@mui/icons-material/Language";
+import { SUPPORTED_LANGUAGES } from "../i18n";
 
 export const AccountPopover = (props) => {
   const {
@@ -40,6 +43,15 @@ export const AccountPopover = (props) => {
   const mdDown = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const popover = usePopover();
   const queryClient = useQueryClient();
+  const { i18n } = useTranslation();
+  const activeCode = i18n.language?.toLowerCase().startsWith("zh") ? "zh-CN" : "en";
+  const currentLanguage = SUPPORTED_LANGUAGES.find((language) => language.code === activeCode) ?? SUPPORTED_LANGUAGES[0];
+  const nextLanguage = SUPPORTED_LANGUAGES.find(
+    (language) => language.code !== currentLanguage.code
+  ) ?? SUPPORTED_LANGUAGES[0];
+  const switchLanguage = useCallback(() => {
+    i18n.changeLanguage(nextLanguage.code);
+  }, [i18n, nextLanguage.code]);
   const { openReleaseNotes } = useReleaseNotes();
   const orgData = ApiGetCall({
     url: "/api/me",
@@ -153,6 +165,19 @@ export const AccountPopover = (props) => {
                     </SvgIcon>
                   </ListItemIcon>
                   <ListItemText primary={paletteMode === "dark" ? "Light Mode" : "Dark Mode"} />
+                </ListItemButton>
+                <ListItemButton
+                  onClick={() => {
+                    popover.handleClose();
+                    switchLanguage();
+                  }}
+                >
+                  <ListItemIcon>
+                    <SvgIcon fontSize="small">
+                      <LanguageIcon />
+                    </SvgIcon>
+                  </ListItemIcon>
+                  <ListItemText primary={`Language: ${currentLanguage.label} → ${nextLanguage.label}`} />
                 </ListItemButton>
               </>
             )}

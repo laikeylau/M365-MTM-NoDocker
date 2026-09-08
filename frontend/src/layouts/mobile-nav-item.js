@@ -6,6 +6,7 @@ import ChevronDownIcon from '@heroicons/react/24/outline/ChevronDownIcon';
 import { Box, ButtonBase, Collapse, SvgIcon } from '@mui/material';
 import ArrowTopRightOnSquareIcon from '@heroicons/react/24/outline/ArrowTopRightOnSquareIcon';
 import LanguageIcon from '@mui/icons-material/Language';
+import { useNavTitle } from '../i18n/nav';
 
 export const MobileNavItem = (props) => {
   const {
@@ -23,6 +24,7 @@ export const MobileNavItem = (props) => {
 
   const isGlobal = scope === "global";
   const [open, setOpen] = useState(openImmediately);
+  const translateTitle = useNavTitle();
 
   const handleToggle = useCallback(() => {
     setOpen((prevOpen) => !prevOpen);
@@ -77,7 +79,7 @@ export const MobileNavItem = (props) => {
               })
             }}
           >
-            {title}
+            {translateTitle(title)}
           </Box>
           <SvgIcon sx={{ fontSize: 16 }}>
             {open ? <ChevronDownIcon /> : <ChevronRightIcon />}
@@ -152,12 +154,12 @@ export const MobileNavItem = (props) => {
             })
           }}
         >
-          {title}
+          {translateTitle(title)}
         </Box>
         {isGlobal && (
           <Box
             component="span"
-            title="Global - not tied to selected tenant"
+            title={translateTitle("Global - not tied to selected tenant")}
             sx={{
               display: "inline-flex",
               alignItems: "center",

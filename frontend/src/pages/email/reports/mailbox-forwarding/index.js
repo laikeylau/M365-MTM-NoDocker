@@ -1,58 +1,18 @@
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
-import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
-import { useCippReportDB } from "../../../../components/CippComponents/CippReportDBControls";
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
 
+/**
+ * B2 旧路由重定向 — 本页已迁移至统一报告中心 (email/mailbox-forwarding)。
+ */
 const Page = () => {
-  const reportDB = useCippReportDB({
-    apiUrl: "/api/ListMailboxForwarding",
-    queryKey: "mailbox-forwarding",
-    cacheName: "Mailboxes",
-    syncTitle: "Sync Mailbox Cache",
-    allowToggle: false,
-    defaultCached: true,
-  });
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/reports/email/mailbox-forwarding')
+  }, [router])
+  return null
+}
 
-  const columns = [
-    ...reportDB.cacheColumns.filter((c) => c === "Tenant"),
-    "UPN",
-    "DisplayName",
-    "RecipientTypeDetails",
-    "ForwardingType",
-    "ForwardTo",
-    "DeliverToMailboxAndForward",
-    ...reportDB.cacheColumns.filter((c) => c !== "Tenant"),
-  ];
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
-  const filters = [
-    {
-      filterName: "External Forwarding",
-      value: [{ id: "ForwardingType", value: "External" }],
-      type: "column",
-    },
-    {
-      filterName: "Internal Forwarding",
-      value: [{ id: "ForwardingType", value: "Internal" }],
-      type: "column",
-    },
-  ];
-
-  return (
-    <>
-      <CippTablePage
-        title="Mailbox Forwarding Report"
-        apiUrl={reportDB.resolvedApiUrl}
-        queryKey={reportDB.resolvedQueryKey}
-        apiData={reportDB.resolvedApiData}
-        simpleColumns={columns}
-        filters={filters}
-        cardButton={reportDB.controls}
-        offCanvas={null}
-      />
-      {reportDB.syncDialog}
-    </>
-  );
-};
-
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
-export default Page;
+export default Page

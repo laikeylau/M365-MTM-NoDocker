@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { BulkActionsMenu } from "../bulk-actions-menu";
 import { CippOffCanvas } from "../CippComponents/CippOffCanvas";
 import { CippBitlockerKeySearch } from "../CippComponents/CippBitlockerKeySearch";
+import { useNavTitle } from "../../i18n/nav";
 import { nativeMenuItems } from "../../layouts/config";
 import { usePermissions } from "../../hooks/use-permissions";
 
@@ -135,6 +136,7 @@ export const CippUniversalSearchV2 = React.forwardRef(
     const dropdownRef = useRef(null);
     const router = useRouter();
     const { userPermissions, userRoles } = usePermissions();
+    const translateTitle = useNavTitle();
 
     const universalSearch = ApiGetCall({
       url: `/api/ExecUniversalSearchV2`,
@@ -798,7 +800,7 @@ const PageResults = ({
               primary={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                   <Typography variant="body1" fontWeight="medium">
-                    {highlightMatch(item.title || "")}
+                    {highlightMatch(translateTitle(item.title) || "")}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {itemType}
@@ -814,12 +816,12 @@ const PageResults = ({
                     <Typography variant="body2" color="text.secondary">
                       {item.breadcrumbs.map((crumb, idx) => (
                         <React.Fragment key={idx}>
-                          {highlightMatch(crumb)}
+                          {highlightMatch(translateTitle(crumb))}
                           {idx < item.breadcrumbs.length - 1 && " > "}
                         </React.Fragment>
                       ))}
                       {" > "}
-                      {highlightMatch(item.title || "")}
+                      {highlightMatch(translateTitle(item.title) || "")}
                     </Typography>
                   )}
                   <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>

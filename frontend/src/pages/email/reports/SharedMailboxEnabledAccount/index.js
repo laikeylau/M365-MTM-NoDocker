@@ -1,49 +1,18 @@
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
-import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
-import { Block } from "@mui/icons-material";
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
 
+/**
+ * B2 旧路由重定向 — 本页已迁移至统一报告中心 (email/shared-mailbox-enabled-account)。
+ */
 const Page = () => {
-  return (
-    <CippTablePage
-      title="Shared Mailbox with Enabled Account"
-      apiUrl="/api/ListSharedMailboxAccountEnabled"
-      actions={[
-        {
-          label: "Block Sign In",
-          type: "POST",
-          icon: <Block />,
-          url: "/api/ExecDisableUser",
-          data: { ID: "id" },
-          confirmText: "Are you sure you want to block the sign-in for this mailbox?",
-          condition: (row) => row.accountEnabled && !row.onPremisesSyncEnabled,
-        },
-      ]}
-      offCanvas={{
-        extendedInfoFields: [
-          "UserPrincipalName",
-          "displayName",
-          "accountEnabled",
-          "assignedLicenses",
-          "onPremisesSyncEnabled",
-        ],
-      }}
-      simpleColumns={[
-        "UserPrincipalName",
-        "displayName",
-        "accountEnabled",
-        "assignedLicenses",
-        "onPremisesSyncEnabled",
-      ]}
-      filters={[
-        {
-          id: "accountEnabled",
-          value: "Yes",
-        },
-      ]}
-    />
-  );
-};
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/reports/email/shared-mailbox-enabled-account')
+  }, [router])
+  return null
+}
 
-Page.getLayout = (page) => <DashboardLayout allTenantsSupport={false}>{page}</DashboardLayout>;
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
-export default Page;
+export default Page

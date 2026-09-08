@@ -91,3 +91,10 @@ curl -s -H "x-ms-client-principal: $(printf '%s' '{"userRoles":["authenticated",
 pwsh -File cipp-server.ps1 -WorkerOnly
 # 观察日志: 定时器 firing + 队列执行 + 编排 GUID
 ```
+
+### 2026-09-08 追加
+- Phase 2 B1+B2 ✅：报告注册表（39 份）+ 报告中心路由/树导航/旧路由重定向；build 341 页通过；无头 E2E 4/4
+- Phase 3 批次 1 ✅：i18next 基础设施 + 导航层全量双语 + 语言切换入口；Windows 本机运行时验证通过
+- 通用端点验证完成：`/api/ListDBCache?tenantFilter=&type=`（签名与预想不同，已按实际调整）
+- 剩余：B3 行内操作；Phase 3 批次 2/3；真实租户联调；Phase 4
+- Phase 2 B3 ✅：行内操作（设备 actions 提取共享 hook + 注册表 preset/内联两种写法）；5 份报告首批接入；build+E2E 通过。**B1–B3 全部完成**

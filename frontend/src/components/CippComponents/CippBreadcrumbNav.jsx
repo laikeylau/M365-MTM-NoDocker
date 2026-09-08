@@ -4,6 +4,7 @@ import { Breadcrumbs, Link, Typography, Box, IconButton, Tooltip } from "@mui/ma
 import { NavigateNext, History, AccountTree } from "@mui/icons-material";
 import { nativeMenuItems } from "../../layouts/config";
 import { useSettings } from "../../hooks/use-settings";
+import { useNavTitle } from "../../i18n/nav";
 
 const MAX_HISTORY_STORAGE = 20; // Maximum number of pages to keep in history
 const MAX_BREADCRUMB_DISPLAY = 5; // Maximum number of breadcrumbs to display at once
@@ -55,6 +56,7 @@ async function loadTabOptions() {
 export const CippBreadcrumbNav = () => {
   const router = useRouter();
   const settings = useSettings();
+  const translateTitle = useNavTitle();
   const [history, setHistory] = useState([]);
   const [mode, setMode] = useState(settings.breadcrumbMode || "hierarchical");
   const [tabOptions, setTabOptions] = useState([]);
@@ -622,7 +624,7 @@ export const CippBreadcrumbNav = () => {
             const isLast = index === breadcrumbs.length - 1;
             const pathInfo = getPathInfo(crumb.path);
             // Use title from nav/tabs if available, otherwise use the crumb's title
-            const displayTitle = pathInfo.title || crumb.title;
+            const displayTitle = translateTitle(pathInfo.title || crumb.title);
 
             // Items without paths (headers/groups) - show as text
             if (!crumb.path) {
@@ -714,7 +716,7 @@ export const CippBreadcrumbNav = () => {
                 variant="subtitle2"
                 sx={{ fontWeight: 500 }}
               >
-                {page.title}
+                {translateTitle(page.title)}
               </Typography>
             );
           }
@@ -734,7 +736,7 @@ export const CippBreadcrumbNav = () => {
                 },
               }}
             >
-              {page.title}
+              {translateTitle(page.title)}
             </Link>
           );
         })}

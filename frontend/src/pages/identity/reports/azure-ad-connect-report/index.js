@@ -1,28 +1,18 @@
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
-import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
 
-const simpleColumns = [
-  "displayName",
-  "ObjectType",
-  "createdDateTime",
-  "onPremisesProvisioningErrors",
-];
-
-const apiUrl = "/api/ListAzureADConnectStatus";
-
+/**
+ * B2 旧路由重定向 — 本页已迁移至统一报告中心 (identity/azure-ad-connect)。
+ */
 const Page = () => {
-  return (
-    <CippTablePage
-      title="Azure AD Connect Report"
-      apiUrl={apiUrl}
-      apiData={{
-        DataToReturn: "AzureADObjectsInError",
-      }}
-      simpleColumns={simpleColumns}
-    />
-  );
-};
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/reports/identity/azure-ad-connect')
+  }, [router])
+  return null
+}
 
-Page.getLayout = (page) => <DashboardLayout allTenantsSupport={false}>{page}</DashboardLayout>;
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
-export default Page;
+export default Page

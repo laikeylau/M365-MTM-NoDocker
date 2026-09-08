@@ -10,6 +10,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import LanguageIcon from "@mui/icons-material/Language";
 import { useUserBookmarks } from "../hooks/use-user-bookmarks";
 import { useSettings } from "../hooks/use-settings";
+import { useNavTitle } from "../i18n/nav";
 
 export const SideNavItem = (props) => {
   const {
@@ -33,6 +34,7 @@ export const SideNavItem = (props) => {
   const { bookmarks, setBookmarks } = useUserBookmarks();
   const settings = useSettings();
   const compactNav = settings.compactNav ?? false;
+  const translateTitle = useNavTitle();
   const isBookmarked = bookmarks.some((bookmark) => bookmark.path === path);
 
   const handleToggle = useCallback(() => {
@@ -115,7 +117,7 @@ export const SideNavItem = (props) => {
                 }),
               }}
             >
-              {title}
+              {translateTitle(title)}
             </Box>
             <SvgIcon
               sx={{
@@ -218,12 +220,12 @@ export const SideNavItem = (props) => {
               }),
             }}
           >
-            {title}
+            {translateTitle(title)}
           </Box>
           {isGlobal && (
             <Box
               component="span"
-              title="Global - not tied to selected tenant"
+              title={translateTitle("Global - not tied to selected tenant")}
               sx={{
                 display: "inline-flex",
                 alignItems: "center",

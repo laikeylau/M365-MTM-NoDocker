@@ -1,86 +1,18 @@
-﻿import { Layout as DashboardLayout } from "../../../../layouts/index.js";
-import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
 
+/**
+ * B2 旧路由重定向 — 本页已迁移至统一报告中心 (email/global-address-list)。
+ */
 const Page = () => {
-  const actions = [
-    {
-      label: "Unhide from Global Address List",
-      type: "POST",
-      url: "/api/ExecHideFromGAL",
-      icon: <Visibility />,
-      data: {
-        HideFromGAL: false,
-        ID: "PrimarySmtpAddress",
-      },
-      confirmText: "Are you sure you want to show this mailbox in the Global Address List?",
-      condition: (row) => row.HiddenFromAddressListsEnabled == true,
-    },
-    {
-      label: "Hide from Global Address List",
-      type: "POST",
-      url: "/api/ExecHideFromGAL",
-      icon: <VisibilityOff />,
-      data: {
-        HideFromGAL: true,
-        ID: "PrimarySmtpAddress",
-      },
-      confirmText: "Are you sure you want to hide this mailbox from the Global Address List?",
-      condition: (row) => row.HiddenFromAddressListsEnabled == false,
-    },
-  ];
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/reports/email/global-address-list')
+  }, [router])
+  return null
+}
 
-  const offCanvas = {
-    extendedInfoFields: [
-      "HiddenFromAddressListsEnabled",
-      "ExternalDirectoryObjectId",
-      "DisplayName",
-      "PrimarySmtpAddress",
-      "RecipientType",
-      "RecipientTypeDetails",
-      "IsDirSynced",
-      "SKUAssigned",
-      "EmailAddresses",
-    ],
-    actions: actions,
-  };
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
-  const filters = [
-    {
-      filterName: "Hidden from GAL",
-      value: [{ id: "HiddenFromAddressListsEnabled", value: "Yes" }],
-      type: "column",
-    },
-    {
-      filterName: "Shown in GAL",
-      value: [{ id: "HiddenFromAddressListsEnabled", value: "No" }],
-      type: "column",
-    },
-    {
-      filterName: "Cloud only mailboxes",
-      value: [{ id: "IsDirSynced", value: "No" }],
-      type: "column",
-    },
-  ];
-
-  return (
-    <CippTablePage
-      title="Global Address List"
-      apiUrl="/api/ListGlobalAddressList"
-      actions={actions}
-      offCanvas={offCanvas}
-      filters={filters}
-      simpleColumns={[
-        "HiddenFromAddressListsEnabled",
-        "DisplayName",
-        "PrimarySmtpAddress",
-        "RecipientTypeDetails",
-        "IsDirSynced",
-      ]}
-    />
-  );
-};
-
-Page.getLayout = (page) => <DashboardLayout allTenantsSupport={false}>{page}</DashboardLayout>;
-
-export default Page;
+export default Page

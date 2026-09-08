@@ -1,4 +1,5 @@
 import { BuildingOfficeIcon, HomeIcon, UsersIcon, WrenchIcon } from '@heroicons/react/24/outline'
+import { AssessmentOutlined as AssessmentOutlinedIcon } from '@mui/icons-material'
 import {
   CloudOutlined,
   HomeRepairService,
@@ -18,6 +19,16 @@ export const nativeMenuItems = [
       </SvgIcon>
     ),
     permissions: ['CIPP.Core.*'],
+  },
+  {
+    title: 'Reports',
+    path: '/reports',
+    icon: (
+      <SvgIcon>
+        <AssessmentOutlinedIcon />
+      </SvgIcon>
+    ),
+    permissions: ['CIPP.Core.Read'],
   },
   {
     title: 'Identity Management',

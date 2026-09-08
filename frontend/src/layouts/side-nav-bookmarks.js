@@ -15,6 +15,7 @@ import ChevronRightIcon from "@heroicons/react/24/outline/ChevronRightIcon";
 import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
 import { useSettings } from "../hooks/use-settings";
 import { useUserBookmarks } from "../hooks/use-user-bookmarks";
+import { useNavTitle } from "../i18n/nav";
 
 export const SideNavBookmarks = ({ collapse = false }) => {
   const settings = useSettings();
@@ -22,6 +23,7 @@ export const SideNavBookmarks = ({ collapse = false }) => {
   const navItemPy = compactNav ? "6px" : "12px";
   const emptyStatePy = compactNav ? "4px" : "8px";
   const { bookmarks, setBookmarks } = useUserBookmarks();
+  const translateTitle = useNavTitle();
   const [open, setOpen] = useState(settings.bookmarksOpen ?? false);
   const reorderMode = settings.bookmarkReorderMode || "arrows";
   const locked = settings.bookmarkLocked ?? true;
@@ -466,10 +468,10 @@ export const SideNavBookmarks = ({ collapse = false }) => {
                     >
                       {bookmark.category && (
                         <Box component="span" sx={{ fontSize: 10, opacity: 0.6, lineHeight: 1.2 }}>
-                          {bookmark.category}
+                          {translateTitle(bookmark.category)}
                         </Box>
                       )}
-                      {bookmark.label}
+                      {translateTitle(bookmark.label)}
                     </Box>
                   </ButtonBase>
                   <Stack
