@@ -114,5 +114,9 @@
   "Max Score": "最高分",
   "Implementation Cost": "实施成本",
   "User Impact": "用户影响",
-  "Is Passwordless Capable": "支持无密码"
+  "Is Passwordless Capable": "支持无密码",
+  "Last Active": "最后活跃",
+  "Teams Chat": "Teams 聊天",
+  "Call Count": "通话次数",
+  "Meeting Count": "会议次数"
 }
