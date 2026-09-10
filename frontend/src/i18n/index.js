@@ -2,6 +2,8 @@ import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import zhNav from "./locales/zh-CN/nav.json";
+import zhCommon from "./locales/zh-CN/common.json";
+import zhColumns from "./locales/zh-CN/columns.json";
 
 export const LANG_STORAGE_KEY = "app.language";
 export const FALLBACK_LANGUAGE = "en";
@@ -38,12 +40,12 @@ export const setStoredLanguage = (lng) => {
 if (!i18next.isInitialized) {
   i18next.use(initReactI18next).init({
     resources: {
-      "zh-CN": { nav: zhNav },
+      "zh-CN": { nav: zhNav, common: zhCommon, columns: zhColumns },
     },
     lng: getStoredLanguage(),
     fallbackLng: FALLBACK_LANGUAGE,
-    defaultNS: "nav",
-    ns: ["nav"],
+    defaultNS: "common",
+    ns: ["common", "nav", "columns"],
     // Nav titles are translated by their exact English string, so keys must be
     // treated atomically (titles contain '.' and '/' characters).
     keySeparator: false,

@@ -26,6 +26,17 @@ import { Box } from '@mui/system'
 import { useSettings } from '../../hooks/use-settings'
 import { isEqual } from 'lodash' // Import lodash for deep comparison
 import { useLicenseBackfill } from '../../hooks/use-license-backfill'
+import { useTranslation } from 'react-i18next'
+import i18next from '../../i18n'
+import { MRT_Localization_ZH_HANS } from 'material-react-table/locales/zh-Hans'
+
+// Translate a UI string from the `common` namespace (English source keys).
+// Safe outside React; components should use useTranslation to re-render on
+// language change.
+const tCommon = (text) =>
+  typeof text === 'string' && text.length > 0
+    ? i18next.t(text, { ns: 'common', defaultValue: text })
+    : text
 
 // Resolve dot-delimited property paths against arbitrary data objects.
 const getNestedValue = (source, path) => {
@@ -287,7 +298,7 @@ function renderGlobalFilterModeMenuItemsFn({ internalFilterOptions, onSelectFilt
       }}
     >
       <span style={{ width: '20px', textAlign: 'center' }}>{filterOption.symbol}</span>
-      <ListItemText>{filterOption.label}</ListItemText>
+      <ListItemText>{tCommon(filterOption.label)}</ListItemText>
     </MenuItem>
   ))
 }
@@ -319,7 +330,7 @@ function renderColumnFilterModeMenuItemsFn({ internalFilterOptions, onSelectFilt
       }}
     >
       <span style={{ width: '20px', textAlign: 'center' }}>{filterOption.symbol}</span>
-      <ListItemText>{filterOption.label}</ListItemText>
+      <ListItemText>{tCommon(filterOption.label)}</ListItemText>
     </MenuItem>
   ))
 }
@@ -395,12 +406,15 @@ export const CippDataTable = (props) => {
   const waitingBool = api?.url ? true : false
 
   const settings = useSettings()
+  const { t, i18n } = useTranslation('common')
 
   // Hook to trigger re-render when license backfill completes
   const { updateTrigger } = useLicenseBackfill()
 
   // Ref to track previous schema key so we only recompute columns when the data shape changes.
   const prevSchemaKeyRef = useRef('')
+  // Ref to track previous language so column headers re-translate on language switch.
+  const prevLangRef = useRef(i18n.language)
   // Ref to track previous data reference for the static-data sync effect.
   const prevDataRef = useRef(data)
 
@@ -474,7 +488,8 @@ export const CippDataTable = (props) => {
 
       const combinedResults = allPages.flatMap((page) => {
         const nestedData = getNestedValue(page, api.dataKey)
-        return nestedData !== undefined ? nestedData : []
+        // 联调修正(2026-09-09): 缓存未同步时 Results 为 null，归一化为空数组，避免 MRT 显示一行 null
+        return nestedData !== undefined && nestedData !== null ? (Array.isArray(nestedData) ? nestedData : [nestedData]) : []
       })
       setUsedData(combinedResults)
     }
@@ -499,8 +514,11 @@ export const CippDataTable = (props) => {
     }
 
     const schemaKey = computeSchemaKey(usedData)
-    // Skip expensive column generation if the schema hasn't changed.
-    if (schemaKey === prevSchemaKeyRef.current && usedColumns.length > 0) {
+    // Recompute when the data schema OR the active language changes (column
+    // headers are translated at render time via getCippTranslation).
+    const langChanged = prevLangRef.current !== i18n.language
+    prevLangRef.current = i18n.language
+    if (!langChanged && schemaKey === prevSchemaKeyRef.current && usedColumns.length > 0) {
       return
     }
     prevSchemaKeyRef.current = schemaKey
@@ -576,7 +594,7 @@ export const CippDataTable = (props) => {
     }
     setUsedColumns(finalColumns)
     setColumnVisibility(newVisibility)
-  }, [columns.length, usedData, queryKey, settings?.currentTenant, filterTypeMap])
+  }, [columns.length, usedData, queryKey, settings?.currentTenant, filterTypeMap, i18n.language])
 
   const createDialog = useDialog()
 
@@ -746,7 +764,7 @@ export const CippDataTable = (props) => {
             <SvgIcon fontSize="small" sx={{ minWidth: '30px' }}>
               {action.icon}
             </SvgIcon>
-            <ListItemText>{action.label}</ListItemText>
+            <ListItemText>{action.label ? t(action.label) : action.label}</ListItemText>
           </MenuItem>
         )),
         offCanvas && (
@@ -767,7 +785,7 @@ export const CippDataTable = (props) => {
             <SvgIcon fontSize="small" sx={{ minWidth: '30px' }}>
               <MoreHoriz />
             </SvgIcon>
-            More Info
+            {t('More Info')}
           </MenuItem>
         ),
       ]
@@ -788,13 +806,13 @@ export const CippDataTable = (props) => {
           <ListItemIcon>
             <More fontSize="small" />
           </ListItemIcon>
-          More Info
+          {t('More Info')}
         </MenuItem>
       )
     }
 
     return undefined
-  }, [actions, offCanvas, settings.currentTenant, handleActionDisabled, createDialog])
+  }, [actions, offCanvas, settings.currentTenant, handleActionDisabled, createDialog, t])
 
   // Stable renderTopToolbar — memoized so MaterialReactTable doesn't re-create the toolbar
   // component on every parent render.
@@ -883,6 +901,7 @@ export const CippDataTable = (props) => {
     renderTopToolbar,
     sortingFns: SORTING_FNS,
     filterFns: FILTER_FNS,
+    localization: i18n.language?.startsWith('zh') ? MRT_Localization_ZH_HANS : undefined,
     globalFilterFn: 'contains',
     enableGlobalFilterModes: true,
     renderGlobalFilterModeMenuItems: renderGlobalFilterModeMenuItemsFn,
@@ -935,7 +954,9 @@ export const CippDataTable = (props) => {
           {getRequestData.isError && !getRequestData.isFetchNextPageError && (
             <ResourceError
               onReload={() => getRequestData.refetch()}
-              message={`Error Loading data:  ${getCippError(getRequestData.error)}`}
+              message={t('Error Loading data: {{message}}', {
+                message: getCippError(getRequestData.error),
+              })}
             />
           )}
         </Scrollbar>
@@ -966,7 +987,9 @@ export const CippDataTable = (props) => {
               {getRequestData.isError && !getRequestData.isFetchNextPageError && (
                 <ResourceError
                   onReload={() => getRequestData.refetch()}
-                  message={`Error Loading data:  ${getCippError(getRequestData.error)}`}
+                  message={t('Error Loading data: {{message}}', {
+                    message: getCippError(getRequestData.error),
+                  })}
                 />
               )}
             </Scrollbar>
@@ -980,7 +1003,7 @@ export const CippDataTable = (props) => {
         extendedData={offCanvasData}
         extendedInfoFields={offCanvas?.extendedInfoFields}
         actions={actions}
-        title={offCanvasData?.Name || offCanvas?.title || 'Extended Info'}
+        title={offCanvasData?.Name || offCanvas?.title || t('Extended Info')}
         children={
           offCanvas?.children ? (row) => offCanvas.children(row, offCanvasRowIndex) : undefined
         }
@@ -1023,7 +1046,7 @@ export const CippDataTable = (props) => {
         return (
           <CippApiDialog
             createDialog={createDialog}
-            title="Confirmation"
+            title={t('Confirmation')}
             fields={actionData.action?.fields}
             api={actionData.action}
             row={actionData.data}
@@ -1031,7 +1054,7 @@ export const CippDataTable = (props) => {
             {...actionData.action}
           />
         )
-      }, [actionData.ready, createDialog, actionData.action, actionData.data, queryKey, title])}
+      }, [actionData.ready, createDialog, actionData.action, actionData.data, queryKey, title, t])}
     </>
   )
 }

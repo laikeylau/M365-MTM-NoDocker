@@ -4,6 +4,7 @@ import { CippDataTable } from "../CippTable/CippDataTable";
 import { useSettings } from "../../hooks/use-settings";
 import { CippHead } from "./CippHead";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export const CippTablePage = (props) => {
   const {
@@ -29,6 +30,7 @@ export const CippTablePage = (props) => {
     ...other
   } = props;
   const tenant = useSettings().currentTenant;
+  const { t } = useTranslation("common");
 
   // Use initialFilters if provided, otherwise use regular filters
   const activeFilters = initialFilters || filters;
@@ -41,7 +43,9 @@ export const CippTablePage = (props) => {
             {tableFilter}
             {tenantInTitle && (!tenant || tenant === null) && (
               <Alert severity="warning">
-                No tenant selected. Please select a tenant from the dropdown above.
+                {t(
+                  "No tenant selected. Please select a tenant from the dropdown above."
+                )}
               </Alert>
             )}
             <Card

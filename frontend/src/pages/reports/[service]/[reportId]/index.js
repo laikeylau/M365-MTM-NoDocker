@@ -12,7 +12,7 @@ import {
   reportToTableProps,
 } from '../../../../data/report-registry'
 import { useReportRowActions } from '../../../../data/report-row-actions'
-import { useNavTitle } from '../../../../i18n/nav'
+import { useReportName } from '../../../../i18n/report-name'
 
 /**
  * B2 统一报告中心 — 动态报告页
@@ -74,7 +74,7 @@ const ReportWithCacheMode = ({ tableProps, rowActions, translateTitle }) => {
 const DynamicReportPage = () => {
   const router = useRouter()
   const { i18n } = useTranslation()
-  const translateTitle = useNavTitle()
+  const translateTitle = useReportName()
   const { service, reportId } = router.query
 
   const report = useMemo(

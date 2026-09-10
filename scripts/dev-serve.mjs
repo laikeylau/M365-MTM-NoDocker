@@ -11,12 +11,28 @@
  * 与 Phase 1 冒烟验证方式一致 —— 本机免登录体验完整界面。
  */
 import http from "node:http";
+import https from "node:https";
 import { promises as fsp } from "node:fs";
 import path from "node:path";
 
 const PORT = Number(process.env.DEV_SERVE_PORT || 3000);
 const API_TARGET = process.env.CIPP_API_ORIGIN || "http://127.0.0.1:7071";
 const OUT_DIR = path.resolve(import.meta.dirname, "..", "frontend", "out");
+
+// 可选 API fixtures（无凭据环境下 E2E 验证用）：
+//   DEV_SERVE_FIXTURES=path/to/fixtures.json
+// JSON 格式: { "/api/ListMFAUsers": [ {row...}, ... ], ... }
+// 命中路径前缀（忽略查询串）的 /api/* 请求直接返回 fixture 数据，不代理到后端。
+const FIXTURES_FILE = process.env.DEV_SERVE_FIXTURES || "";
+let FIXTURES = null;
+if (FIXTURES_FILE) {
+  try {
+    FIXTURES = JSON.parse(await fsp.readFile(FIXTURES_FILE, "utf8"));
+    console.log(`[dev-serve] API fixtures loaded: ${FIXTURES_FILE} (${Object.keys(FIXTURES).length} routes)`);
+  } catch (err) {
+    console.warn(`[dev-serve] WARN: cannot load fixtures: ${err.message}`);
+  }
+}
 
 // SWA principal: superadmin → /api/me 返回完整权限主体，免登录
 const MOCK_PRINCIPAL = Buffer.from(
@@ -70,14 +86,23 @@ async function resolveStaticFile(urlPath) {
 
 function proxyApi(req, res) {
   const headers = { ...req.headers };
-  headers.host = new URL(API_TARGET).host;
+  const target = new URL(API_TARGET);
+  headers.host = target.host;
   if (!headers["x-ms-client-principal"]) {
     headers["x-ms-client-principal"] = MOCK_PRINCIPAL;
   }
   headers["x-forwarded-for"] = headers["x-forwarded-for"] || "127.0.0.1";
-
+  // 远程 https 上游（生产联调 CIPP_API_ORIGIN=https://...）：按协议选模块 + 防代理头部污染
+  const isHttps = target.protocol === "https:";
+  if (isHttps) {
+    delete headers.connection;
+    headers["user-agent"] =
+      headers["user-agent"] ||
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
+  }
+  const transport = isHttps ? https : http;
   const upstream = new URL(req.url, API_TARGET);
-  const proxyReq = http.request(
+  const proxyReq = transport.request(
     upstream,
     { method: req.method, headers },
     (proxyRes) => {
@@ -89,7 +114,7 @@ function proxyApi(req, res) {
     res.writeHead(503, { "content-type": "application/json; charset=utf-8" });
     res.end(
       JSON.stringify({
-        error: "API 不可达 —— 请先启动后端: pwsh -File cipp-server.ps1",
+        error: `API 不可达 —— 请检查上游 ${API_TARGET}`,
         detail: String(err && err.message),
       })
     );
@@ -100,6 +125,13 @@ function proxyApi(req, res) {
 const server = http.createServer(async (req, res) => {
   try {
     if (req.url.startsWith("/api/")) {
+      if (FIXTURES) {
+        const pathname = decodeURIComponent(req.url.split("?")[0]);
+        if (Object.prototype.hasOwnProperty.call(FIXTURES, pathname)) {
+          res.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+          return res.end(JSON.stringify(FIXTURES[pathname]));
+        }
+      }
       return proxyApi(req, res);
     }
     const file = await resolveStaticFile(req.url);

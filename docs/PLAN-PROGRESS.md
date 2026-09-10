@@ -12,8 +12,8 @@
 | | A3 前端预构建 + 死代码清理 | ✅ 完成(2026-09-08: 93+ 死文件删除、ToastContext 迁移、10 依赖裁剪、next build 全量通过 302 页导出) |
 | | A4 安装与残留清理 | ✅ 完成 |
 | | A5 后台任务自持 | ✅ 完成(端到端验证通过) |
-| Phase 2 报告中心 (轨道 B) | B1–B3 | ❌ 未开始 |
-| Phase 3 双语 (轨道 C) | C | ❌ 未开始 |
+| Phase 2 报告中心 (轨道 B) | B1–B3 | ✅ 完成（注册表 70 份：39 首批 + 31 份 AdminDroid 对标；动态路由/树导航 + 行内操作；真实租户联调 ✅ 对生产 API 完成，E2E 15/15，环境类失败另列） |
+| Phase 3 双语 (轨道 C) | C | ✅ 完成（批次 1 导航层 + 批次 2 管理页 chrome + 批次 3 报告中心/动作/列头渐进） |
 | Phase 4 收尾 | 文档+验证 | ⚠️ README 已重写；部署演练需在 Linux 上做 |
 
 ## 已完成明细
@@ -98,3 +98,24 @@ pwsh -File cipp-server.ps1 -WorkerOnly
 - 通用端点验证完成：`/api/ListDBCache?tenantFilter=&type=`（签名与预想不同，已按实际调整）
 - 剩余：B3 行内操作；Phase 3 批次 2/3；真实租户联调；Phase 4
 - Phase 2 B3 ✅：行内操作（设备 actions 提取共享 hook + 注册表 preset/内联两种写法）；5 份报告首批接入；build+E2E 通过。**B1–B3 全部完成**
+- Phase 3 批次 2 ✅：管理页 common 命名空间（表格 chrome 49 词条 + MRT 官方 zh-Hans 本地化注入）；build/eslint/字典/无头 E2E PASS
+- Phase 3 批次 3 ✅（2026-09-09）：报告中心 nameEn/nameZh 对接（report-name.js 注册表直查，标题/树/浏览器 tab 随语言切换）+ 动作 label（行内/批量菜单，common 100 词条）+ 列头渐进覆盖（columns ns 68 词条 + getCippTranslation 接入 + 语言切换列重算）；dev-serve 新增 API fixtures 能力；字典校验 9/9 + 无头 E2E 16/16 + 回归 2 脚本 PASS。**Phase 3 全部完成**
+- 剩余：真实租户联调（需 CSP RefreshToken 环境）；graph-office-reports 可选迁移；Phase 4（RUNBOOK/MIGRATION-GUIDE 同步 + Ubuntu 演练）
+
+### 2026-09-09 追加：② 真实租户联调 ✅（详见 PHASE2-PREP.md §10）
+- **联调环境**：直接对生产 API `https://mtm.cxty.de`（服务器侧注入 superadmin，无需本地凭据）；租户 `lenitech.onmicrosoft.com`；本机新构建 out/ + dev-serve https 上游
+- **新工具**：`scripts/live-integration.mjs`（39 报告逐一联调 + Exec 端点探测）；`scripts/verify-live-reports-headless.mjs`（真实数据 E2E）
+- **API 层**：30/39 有数据（DBCache 19/19 全命中；列匹配 mfa-state 11/11、signin 8/8、mailbox-statistics 7/7）；7 项失败均为环境问题（EXO token 过期 ×2、Sherweb 未启用、ListGlobalAddressList 后端 bug〔已修〕等）
+- **前端修复 4 处**：DBCache 缺 `apiDataKey:'Results'`（包裹形态整包当一行）；`Results:null` 归一化（否则渲染一行 null）；`inactive-users` 列名 PascalCase→camelCase + 补 useReportDB；`mailbox-forwarding`/`calendar-permissions` 列对齐旧页 + 转发动作映射 `User`→`UPN`
+- **后端修复 1 处**：`Invoke-ListGlobalAddressList.ps1` 反引号续行断裂（`` ` -AsApp``+空格）致 `-Select` 被当命令 → 403
+- **B3 执行链**：3 个 Exec 端点生产存在（GET 探测）；mfa-state 行内菜单 8 项真实数据下正常；POST 全链留待受控租户手工触发
+- **验证**：build 341+ 页通过；eslint 零新增；E2E 10/10 PASS（真实数据渲染/解包修复/ZH 切换/console 零错误）
+- **剩余**：本次修复随下次部署上生产（生产 out/ 仍旧构建）；EXO 凭据更新后复验 3 报告；真实 POST 手工闭环；Phase 4
+
+### 2026-09-10 追加：第二批扩充 ✅ AdminDroid 对标合并（39 → 70 份，详见 PHASE2-PREP.md §11）
+- **素材**：生产已同步 70 类缓存 − 注册表已用 20 类 = 54 候选；筛除未同步 7 类（Copilot ×4 等）与在线报告重复 4 类（EXO 政策类）→ **新增 31 份全 DBCache 报告**
+- **覆盖扩展**：目录角色/PIM 活动分配、企业应用/应用注册/角色分配、MFA·SSPR 注册明细、DKIM/隔离/预设安全策略、OneDrive·SharePoint 用量、Office 激活、Azure AD 设备/加密状态、Intune 合规/配置/保护/Autopilot、安全分数控制项(460 行)/目录建议/Defender 接入、验证强度/命名位置/跨租户策略
+- 新分类 3 个（角色与管理员/企业应用/Office 应用）；精选列字段生产实测核对；**生产独有类型 10 个**（本地缓存配置落后于生产版本）
+- i18n：columns.json +48 词条（87 显式列全覆盖）；字典校验 ALL PASS
+- 验证：build 70 报告 SSG 通过；live-integration 31/31 全 200 零新增 FAIL；E2E **15/15 PASS**（脚本重构为确定性等待，修复时序 flake）
+- graph-office-reports 维持不迁（交互页）；遗留：7 类待生产同步后补注册 + §10 既有项

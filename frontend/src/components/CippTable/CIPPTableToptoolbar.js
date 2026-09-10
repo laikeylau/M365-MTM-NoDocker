@@ -49,6 +49,7 @@ import { useRouter } from 'next/router'
 import { CippOffCanvas } from '../CippComponents/CippOffCanvas'
 import { CippCodeBlock } from '../CippComponents/CippCodeBlock'
 import { ApiGetCall } from '../../api/ApiCall'
+import { useTranslation } from 'react-i18next'
 import GraphExplorerPresets from '../../data/GraphExplorerPresets.json'
 import CippGraphExplorerFilter from './CippGraphExplorerFilter'
 import { Stack } from '@mui/system'
@@ -173,6 +174,7 @@ export const CIPPTableToptoolbar = React.memo(
     const settings = useSettings()
     const router = useRouter()
     const createDialog = useDialog()
+    const { t } = useTranslation('common')
     const [actionData, setActionData] = useState({ data: {}, action: {}, ready: false })
     const [offcanvasVisible, setOffcanvasVisible] = useState(false)
     const [jsonDialogOpen, setJsonDialogOpen] = useState(false) // For dialog-based JSON view
@@ -710,10 +712,10 @@ export const CIPPTableToptoolbar = React.memo(
             <Tooltip
               title={
                 getRequestData?.isFetchNextPageError
-                  ? 'Could not retrieve all data. Click to try again.'
+                  ? t('Could not retrieve all data. Click to try again.')
                   : getRequestData?.isFetching
-                    ? 'Retrieving more data...'
-                    : 'Refresh data'
+                    ? t('Retrieving more data...')
+                    : t('Refresh data')
               }
             >
               <span>
@@ -762,7 +764,7 @@ export const CIPPTableToptoolbar = React.memo(
             <ModernSearchContainer elevation={0}>
               <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
               <ModernSearchInput
-                placeholder="Search input"
+                placeholder={t('Search input')}
                 value={searchValue}
                 onChange={handleSearchChange}
               />
@@ -794,7 +796,7 @@ export const CIPPTableToptoolbar = React.memo(
                     borderColor: activeFilterName ? 'primary.main' : undefined,
                   }}
                 >
-                  Filters
+                  {t('Filters')}
                 </ModernButton>
                 <Menu
                   anchorEl={filtersAnchor}
@@ -816,13 +818,13 @@ export const CIPPTableToptoolbar = React.memo(
                   >
                     <ListItemText>
                       {table.getState().showColumnFilters
-                        ? 'Hide Column Filters'
-                        : 'Show Column Filters'}
+                        ? t('Hide Column Filters')
+                        : t('Show Column Filters')}
                     </ListItemText>
                   </MenuItem>
                   <Divider />
                   <MenuItem onClick={() => setTableFilter('', 'reset', '')}>
-                    <ListItemText primary="Reset all filters" />
+                    <ListItemText primary={t('Reset all filters')} />
                   </MenuItem>
                   {api?.url === '/api/ListGraphRequest' && (
                     <MenuItem
@@ -831,7 +833,7 @@ export const CIPPTableToptoolbar = React.memo(
                         setFilterCanvasVisible(true)
                       }}
                     >
-                      <ListItemText primary="Edit filters" />
+                      <ListItemText primary={t('Edit filters')} />
                     </MenuItem>
                   )}
                   {filterList?.length > 0 && <Divider />}
@@ -863,7 +865,7 @@ export const CIPPTableToptoolbar = React.memo(
                   endIcon={<ArrowDownIcon />}
                   onClick={(event) => setColumnsAnchor(event.currentTarget)}
                 >
-                  Columns
+                  {t('Columns')}
                 </ModernButton>
                 <Menu
                   anchorEl={columnsAnchor}
@@ -879,13 +881,13 @@ export const CIPPTableToptoolbar = React.memo(
                   }}
                 >
                   <MenuItem onClick={resetToPreferedVisibility}>
-                    <ListItemText primary="Reset to preferred columns" />
+                    <ListItemText primary={t('Reset to preferred columns')} />
                   </MenuItem>
                   <MenuItem onClick={saveAsPreferedColumns}>
-                    <ListItemText primary="Save as preferred columns" />
+                    <ListItemText primary={t('Save as preferred columns')} />
                   </MenuItem>
                   <MenuItem onClick={resetToDefaultVisibility}>
-                    <ListItemText primary="Delete preferred columns" />
+                    <ListItemText primary={t('Delete preferred columns')} />
                   </MenuItem>
                   <Divider />
                   {table
@@ -914,7 +916,7 @@ export const CIPPTableToptoolbar = React.memo(
                     endIcon={<ArrowDownIcon />}
                     onClick={(event) => setExportAnchor(event.currentTarget)}
                   >
-                    Export
+                    {t('Export')}
                   </ModernButton>
                 )}
               </Box>
@@ -952,7 +954,7 @@ export const CIPPTableToptoolbar = React.memo(
                 <ListItemIcon>
                   <FilterListIcon />
                 </ListItemIcon>
-                <ListItemText>Filters</ListItemText>
+                <ListItemText>{t('Filters')}</ListItemText>
               </MenuItem>
               <MenuItem
                 onClick={(event) => {
@@ -963,7 +965,7 @@ export const CIPPTableToptoolbar = React.memo(
                 <ListItemIcon>
                   <ViewColumnIcon />
                 </ListItemIcon>
-                <ListItemText>Columns</ListItemText>
+                <ListItemText>{t('Columns')}</ListItemText>
               </MenuItem>
               {exportEnabled && (
                 <MenuItem
@@ -975,7 +977,7 @@ export const CIPPTableToptoolbar = React.memo(
                   <ListItemIcon>
                     <ExportIcon />
                   </ListItemIcon>
-                  <ListItemText>Export</ListItemText>
+                  <ListItemText>{t('Export')}</ListItemText>
                 </MenuItem>
               )}
               <MenuItem
@@ -988,7 +990,7 @@ export const CIPPTableToptoolbar = React.memo(
                   <FullscreenIcon />
                 </ListItemIcon>
                 <ListItemText>
-                  {table.getState().isFullScreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                  {table.getState().isFullScreen ? t('Exit Fullscreen') : t('Fullscreen')}
                 </ListItemText>
               </MenuItem>
             </Menu>
@@ -1014,13 +1016,13 @@ export const CIPPTableToptoolbar = React.memo(
               >
                 <ListItemText>
                   {table.getState().showColumnFilters
-                    ? 'Hide Column Filters'
-                    : 'Show Column Filters'}
+                    ? t('Hide Column Filters')
+                    : t('Show Column Filters')}
                 </ListItemText>
               </MenuItem>
               <Divider />
               <MenuItem onClick={() => setTableFilter('', 'reset', '')}>
-                <ListItemText primary="Reset all filters" />
+                <ListItemText primary={t('Reset all filters')} />
               </MenuItem>
               {api?.url === '/api/ListGraphRequest' && (
                 <MenuItem
@@ -1029,7 +1031,7 @@ export const CIPPTableToptoolbar = React.memo(
                     setFilterCanvasVisible(true)
                   }}
                 >
-                  <ListItemText primary="Edit filters" />
+                  <ListItemText primary={t('Edit filters')} />
                 </MenuItem>
               )}
               {filterList?.length > 0 && <Divider />}
@@ -1070,13 +1072,13 @@ export const CIPPTableToptoolbar = React.memo(
               }}
             >
               <MenuItem onClick={resetToPreferedVisibility}>
-                <ListItemText primary="Reset to preferred columns" />
+                <ListItemText primary={t('Reset to preferred columns')} />
               </MenuItem>
               <MenuItem onClick={saveAsPreferedColumns}>
-                <ListItemText primary="Save as preferred columns" />
+                <ListItemText primary={t('Save as preferred columns')} />
               </MenuItem>
               <MenuItem onClick={resetToDefaultVisibility}>
-                <ListItemText primary="Delete preferred columns" />
+                <ListItemText primary={t('Delete preferred columns')} />
               </MenuItem>
               <Divider />
               {table
@@ -1123,7 +1125,7 @@ export const CIPPTableToptoolbar = React.memo(
                   <ListItemIcon>
                     <CsvIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Export to CSV" />
+                  <ListItemText primary={t('Export to CSV')} />
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -1136,7 +1138,7 @@ export const CIPPTableToptoolbar = React.memo(
                   <ListItemIcon>
                     <PdfIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Export to PDF" />
+                  <ListItemText primary={t('Export to PDF')} />
                 </MenuItem>
                 {builtInBulkExportAvailable && (
                   <>
@@ -1150,7 +1152,7 @@ export const CIPPTableToptoolbar = React.memo(
                       <ListItemIcon>
                         <CsvIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Export Selected to CSV" />
+                      <ListItemText primary={t('Export Selected to CSV')} />
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
@@ -1161,7 +1163,7 @@ export const CIPPTableToptoolbar = React.memo(
                       <ListItemIcon>
                         <PdfIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Export Selected to PDF" />
+                      <ListItemText primary={t('Export Selected to PDF')} />
                     </MenuItem>
                   </>
                 )}
@@ -1179,7 +1181,7 @@ export const CIPPTableToptoolbar = React.memo(
                   <ListItemIcon>
                     <CodeIcon />
                   </ListItemIcon>
-                  <ListItemText primary="View API Response" />
+                  <ListItemText primary={t('View API Response')} />
                 </MenuItem>
               </Menu>
             )}
@@ -1209,7 +1211,9 @@ export const CIPPTableToptoolbar = React.memo(
                   mr: 1,
                 }}
               >
-                {table.getSelectedRowModel().rows.length} rows selected
+                {t('{{count}} rows selected', {
+                  count: table.getSelectedRowModel().rows.length,
+                })}
               </Typography>
             )}
 
@@ -1234,13 +1238,13 @@ export const CIPPTableToptoolbar = React.memo(
                   mr: 1,
                 }}
               >
-                Bulk Actions
+                {t('Bulk Actions')}
               </Button>
             )}
 
             {/* Cold start indicator */}
             {getRequestData?.data?.pages?.[0].Metadata?.ColdStart === true && (
-              <Tooltip title="Function App cold start was detected, data takes a little longer to retrieve on first load.">
+              <Tooltip title={t('Function App cold start was detected, data takes a little longer to retrieve on first load.')}>
                 <SevereCold />
               </Tooltip>
             )}
@@ -1333,7 +1337,7 @@ export const CIPPTableToptoolbar = React.memo(
                 <SvgIcon fontSize="small" sx={{ minWidth: '30px' }}>
                   {action.icon}
                 </SvgIcon>
-                <ListItemText>{action.label}</ListItemText>
+                <ListItemText>{action.label ? t(action.label) : action.label}</ListItemText>
               </MenuItem>
             ))}
         </Menu>
@@ -1342,7 +1346,7 @@ export const CIPPTableToptoolbar = React.memo(
         {!isInDialog && (
           <CippOffCanvas
             size="xl"
-            title="API Response"
+            title={t('API Response')}
             visible={offcanvasVisible}
             onClose={() => {
               setOffcanvasVisible(false)
@@ -1364,7 +1368,7 @@ export const CIPPTableToptoolbar = React.memo(
         {actionData.ready && (
           <CippApiDialog
             createDialog={createDialog}
-            title="Confirmation"
+            title={t('Confirmation')}
             fields={actionData.action?.fields}
             api={actionData.action}
             row={actionData.data}
@@ -1376,7 +1380,7 @@ export const CIPPTableToptoolbar = React.memo(
         {/* Graph Filter Off-Canvas */}
         <CippOffCanvas
           size="md"
-          title="Edit Filters"
+          title={t('Edit Filters')}
           visible={filterCanvasVisible}
           onClose={() => setFilterCanvasVisible(!filterCanvasVisible)}
           contentPadding={1}
@@ -1394,7 +1398,7 @@ export const CIPPTableToptoolbar = React.memo(
               }
             }}
             onSubmitFilter={(filter) => {
-              setTableFilter(filter, 'graph', 'Custom Filter')
+              setTableFilter(filter, 'graph', t('Custom Filter'))
               setFilterCanvasVisible(false)
               if (filter?.$select) {
                 let selectedColumns = []
@@ -1426,7 +1430,7 @@ export const CIPPTableToptoolbar = React.memo(
             onClose={() => setJsonDialogOpen(false)}
             sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
           >
-            <DialogTitle>API Response</DialogTitle>
+            <DialogTitle>{t('API Response')}</DialogTitle>
             <DialogContent>
               <CippCodeBlock
                 type="editor"
@@ -1436,7 +1440,7 @@ export const CIPPTableToptoolbar = React.memo(
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setJsonDialogOpen(false)}>Close</Button>
+              <Button onClick={() => setJsonDialogOpen(false)}>{t('Close')}</Button>
             </DialogActions>
           </Dialog>
         )}

@@ -19,8 +19,10 @@ import { CippFormComponent } from "../CippComponents/CippFormComponent";
 import { ApiGetCall, ApiPostCall } from "../../api/ApiCall";
 import { Grid } from "@mui/system";
 import defaultPresets from "../../data/DiagnosticsPresets.json";
+import { useTranslation } from "react-i18next";
 
 const CippDiagnosticsFilter = ({ onSubmitFilter }) => {
+  const { t } = useTranslation("common");
   const [expanded, setExpanded] = useState(true);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [presetOptions, setPresetOptions] = useState([]);
@@ -121,7 +123,7 @@ const CippDiagnosticsFilter = ({ onSubmitFilter }) => {
     savePresetApi.mutate({
       url: "/api/ExecDiagnosticsPresets",
       data: presetData,
-      title: isUpdate ? "Update Preset" : "Save Preset",
+      title: isUpdate ? t("Update Preset") : t("Save Preset"),
       message: isUpdate
         ? `Preset "${presetName}" updated successfully`
         : `Preset "${presetName}" saved successfully`,
@@ -217,10 +219,10 @@ const CippDiagnosticsFilter = ({ onSubmitFilter }) => {
                         <Tooltip
                           title={
                             selectedPreset?.isBuiltin
-                              ? "Save as New Custom Preset"
+                              ? t("Save as New Custom Preset")
                               : selectedPreset
-                              ? "Update Preset"
-                              : "Save Preset"
+                              ? t("Update Preset")
+                              : t("Save Preset")
                           }
                         >
                           <span>
@@ -236,8 +238,8 @@ const CippDiagnosticsFilter = ({ onSubmitFilter }) => {
                         <Tooltip
                           title={
                             selectedPreset?.isBuiltin
-                              ? "Built-in presets cannot be deleted"
-                              : "Delete Preset"
+                              ? t("Built-in presets cannot be deleted")
+                              : t("Delete Preset")
                           }
                         >
                           <span>

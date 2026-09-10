@@ -6,6 +6,7 @@ import { useMediaQuery, Grid } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { useTranslation } from "react-i18next";
 
 export const CippOffCanvas = (props) => {
   const {
@@ -28,6 +29,7 @@ export const CippOffCanvas = (props) => {
   } = props;
 
   const mdDown = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const { t } = useTranslation("common");
   const extendedInfo = extendedInfoFields.map((field) => {
     const value = field.split(".").reduce((acc, part) => acc && acc[part], extendedData);
     if (value === undefined || value === null) {
@@ -91,7 +93,7 @@ export const CippOffCanvas = (props) => {
         <Box
           sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 1.5 }}
         >
-          <Typography variant="h5">{title}</Typography>
+          <Typography variant="h5">{t(title)}</Typography>
           <Box sx={{ display: "flex", gap: 0.5 }}>
             {(canNavigateUp || canNavigateDown) && (
               <>
@@ -99,7 +101,7 @@ export const CippOffCanvas = (props) => {
                   onClick={onNavigateUp}
                   disabled={!canNavigateUp}
                   size="small"
-                  title="Previous row"
+                  title={t("Previous row")}
                 >
                   <KeyboardArrowUpIcon />
                 </IconButton>
@@ -107,7 +109,7 @@ export const CippOffCanvas = (props) => {
                   onClick={onNavigateDown}
                   disabled={!canNavigateDown}
                   size="small"
-                  title="Next row"
+                  title={t("Next row")}
                 >
                   <KeyboardArrowDownIcon />
                 </IconButton>

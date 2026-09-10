@@ -13,6 +13,7 @@ import { debounce } from 'lodash'
 import CippButtonCard from '../CippCards/CippButtonCard'
 import CippFormComponent from '../CippComponents/CippFormComponent'
 import { ApiGetCall, ApiPostCall } from '../../api/ApiCall'
+import { useTranslation } from 'react-i18next'
 import { useSettings } from '../../hooks/use-settings'
 import { CippApiResults } from '../CippComponents/CippApiResults'
 import { CippFormCondition } from '../CippComponents/CippFormCondition'
@@ -34,6 +35,7 @@ const CippGraphExplorerFilter = ({
   hideButtons = false,
   initialValues = null,
 }) => {
+  const { t } = useTranslation('common')
   const [offCanvasOpen, setOffCanvasOpen] = useState(false)
   const [cardExpanded, setCardExpanded] = useState(true)
   const [offCanvasContent, setOffCanvasContent] = useState(null)
@@ -812,7 +814,7 @@ const CippGraphExplorerFilter = ({
                     startIcon={<PlayCircle />}
                     fullWidth
                   >
-                    Apply Filter
+                    {t('Apply Filter')}
                   </Button>
 
                   <Button
@@ -821,7 +823,7 @@ const CippGraphExplorerFilter = ({
                     onClick={handleScheduleReport}
                     fullWidth
                   >
-                    Schedule Report
+                    {t('Schedule Report')}
                   </Button>
 
                   <Button
@@ -830,7 +832,8 @@ const CippGraphExplorerFilter = ({
                     startIcon={<>{presetOwner ? <SaveIcon /> : <CopyAll />}</>}
                     fullWidth
                   >
-                    {presetOwner || !selectedPreset ? 'Save' : 'Copy'} Preset
+                    {presetOwner || !selectedPreset ? t('Save') : t('Copy')}{' '}
+                    {t('Preset')}
                   </Button>
 
                   <Button
@@ -840,7 +843,7 @@ const CippGraphExplorerFilter = ({
                     disabled={!presetOwner}
                     fullWidth
                   >
-                    Delete Preset
+                    {t('Delete Preset')}
                   </Button>
 
                   <Button
@@ -850,7 +853,7 @@ const CippGraphExplorerFilter = ({
                     startIcon={<ImportExport />}
                     fullWidth
                   >
-                    Import/Export
+                    {t('Import/Export')}
                   </Button>
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                     <CippFormComponent
@@ -871,7 +874,7 @@ const CippGraphExplorerFilter = ({
                       startIcon={<PlayCircle />}
                       fullWidth
                     >
-                      Apply Filter
+                      {t('Apply Filter')}
                     </Button>
                   </Grid>
                   <Grid size={6}>
@@ -881,7 +884,7 @@ const CippGraphExplorerFilter = ({
                       onClick={handleScheduleReport}
                       fullWidth
                     >
-                      Schedule Report
+                      {t('Schedule Report')}
                     </Button>
                   </Grid>
                   <Grid size={6}>
@@ -891,7 +894,8 @@ const CippGraphExplorerFilter = ({
                       startIcon={<>{presetOwner ? <SaveIcon /> : <CopyAll />}</>}
                       fullWidth
                     >
-                      {presetOwner || !selectedPreset ? 'Save' : 'Copy'} Preset
+                      {presetOwner || !selectedPreset ? t('Save') : t('Copy')}{' '}
+                      {t('Preset')}
                     </Button>
                   </Grid>
 
@@ -903,7 +907,7 @@ const CippGraphExplorerFilter = ({
                       disabled={!presetOwner}
                       fullWidth
                     >
-                      Delete Preset
+                      {t('Delete Preset')}
                     </Button>
                   </Grid>
 
@@ -915,7 +919,7 @@ const CippGraphExplorerFilter = ({
                       startIcon={<ImportExport />}
                       fullWidth
                     >
-                      Import/Export
+                      {t('Import/Export')}
                     </Button>
                   </Grid>
                   <Grid size={6} sx={{ display: 'flex', justifyContent: 'center' }}>
